@@ -1,10 +1,17 @@
 import logging
+from datetime import datetime
 import os
 
 """ Crear una instancia de la clase logger con la configuracion esperada """
-def get_logger(p_name: str, p_time_delta: str) -> logging.Logger:
+def get_logger(p_name: str, p_posfix: str = "") -> logging.Logger:
 
     LOGS_DIR = "logs"
+
+    #Validamos que hayamos recibido el posfijo(parte final) del 
+    v_posFijo_nombre = datetime.now().strftime("%Y%m%d%H%M%S")
+    if p_posfix != "":
+        v_posFijo_nombre = p_posfix
+        
 
     if not os.path.exists(LOGS_DIR):
         os.makedirs(LOGS_DIR)
@@ -15,7 +22,7 @@ def get_logger(p_name: str, p_time_delta: str) -> logging.Logger:
 
     #crear los manejadores
     console_handler = logging.StreamHandler()
-    file_handler = logging.FileHandler(os.path.join(LOGS_DIR, f"{p_name}-{p_time_delta}.log"), 
+    file_handler = logging.FileHandler(os.path.join(LOGS_DIR, f"{p_name}-{v_posFijo_nombre}.log"), 
                                         mode="a", 
                                         encoding="utf-8")
 

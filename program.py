@@ -16,11 +16,9 @@ load_dotenv()
 def main():
 	#TODO: parametros desde linea de comando
 
-	
-	l = log_helper.get_logger("app",
-			datetime.now()
-				.strftime("%Y%m%d%H%M%S")
-		)
+	#creamos el logger principal de la aplicacion, con la hora de ejecucion como posfijo del archivo log
+	time_of_exec = datetime.now().strftime("%Y%m%d%H%M%S")
+	l = log_helper.get_logger("app", time_of_exec)
 
 	l.info("Cargando configuracion del ambiente")
 	SERVER = os.getenv('SERVER')
@@ -32,17 +30,20 @@ def main():
 	connectionString = f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={SERVER};DATABASE={DATABASE};TrustServerCertificate=yes;UID={USER_ID};PWD={PASSWORD}'
     
 	try:
+		
 		l.info("Conectando a la Base de datos")
-		conn = pyodbc.connect(connectionString)
+		with pyodbc.connect(connectionString) as conn:
+			
+			#TODO: Dependiento de los parametros enviados en la linea de comandos ejecutamos las llamadas.
 
-		l.info("Buscando condiciones de credito")
-		api_man.get_cond_credito(conn,'dico')
+			l.info("Buscando condiciones de credito")
+			api_man.get_cond_credito(conn,'dico')
+
+
+		l.info("Proceso Finalizado")
 
 	except pyodbc.DatabaseError as dberror:
 		l.error(f"No se pudo conectar a la bd {dberror}")
-	finally:
-		l.info("Cerrando conexion de Base de Datos")
-		conn.close()
 
 
 if __name__ == "__main__":
